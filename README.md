@@ -78,6 +78,8 @@ Se preferir compilar o aplicativo você mesmo:
 
 ### 🔒 Verificação de Integridade e Autenticidade
 
+As releases automáticas incluem o `.exe` e seu checksum `.sha256`, sem assinatura GPG. Compare o hash como no passo 5 abaixo. Os passos de assinatura GPG se aplicam somente às releases que incluem arquivos `.asc`.
+
 Você pode verificar se o arquivo `.exe` baixado é autêntico e não foi corrompido:
 
 #### ✔️ Passo 1: Baixe os arquivos
@@ -204,6 +206,8 @@ dotnet run --project tests/OutputSettings.Tests -c Release
 
 ### 🔒 Integrity and Authenticity Verification
 
+Automated releases include the `.exe` and its `.sha256` checksum, without a GPG signature. Compare the hash as shown in step 5 below. The GPG signature steps apply only to releases that include `.asc` files.
+
 You can verify that the `.exe` file is authentic and has not been tampered with:
 
 #### ✔️ Step 1: Download the verification files
@@ -247,3 +251,27 @@ Compare the output with the value in `TidalNowPlaying.exe.sha256`. They should m
 ### 📄 License
 
 This project is distributed under the MIT License. See the [LICENSE](LICENSE) file for more details.
+
+## Builds e releases automáticas / Automated builds and releases
+
+### Português
+
+* Pull requests e pushes em `main`, incluindo merges, executam as verificações e geram o executável Windows x64. Na aba **Actions**, abra a execução **Build and release** e baixe o artefato **TidalNowPlaying-win-x64**, disponível por 30 dias.
+* Para publicar uma release após o merge, crie e envie uma tag no formato `vMAJOR.MINOR.PATCH`, por exemplo `v1.0.2`, no commit desejado de `main`. A tag define a versão do executável. A release inclui `TidalNowPlaying.exe`, `TidalNowPlaying.exe.sha256` e notas geradas pelo GitHub.
+* Um merge gera um artefato, mas não publica uma release. Também é possível gerar um artefato manualmente em **Actions → Build and release → Run workflow**.
+* O executável continua exigindo o **.NET 8 Desktop Runtime x64**. A automação não usa a chave GPG pessoal e não gera arquivos `.asc`.
+
+### English
+
+* Pull requests and pushes to `main`, including merges, run the checks and build the Windows x64 executable. Open **Actions → Build and release**, select the run, and download **TidalNowPlaying-win-x64** under artifacts. Artifacts are retained for 30 days.
+* To publish a release after merging, create and push a `vMAJOR.MINOR.PATCH` tag, such as `v1.0.2`, on the desired `main` commit. The tag sets the executable version. The release includes `TidalNowPlaying.exe`, `TidalNowPlaying.exe.sha256`, and GitHub-generated release notes.
+* Merging produces an artifact without publishing a release. You can also build an artifact using **Actions → Build and release → Run workflow**.
+* The executable still requires the **.NET 8 Desktop Runtime x64**. The workflow does not use the personal GPG key or generate `.asc` signatures.
+
+To reproduce the release build locally from the repository root:
+
+```powershell
+./scripts/Publish.ps1 -Tag v1.0.2
+```
+
+This writes the executable and checksum to `artifacts/` without creating a tag or publishing a release. Omit `-Tag` to use the version in the project file.
