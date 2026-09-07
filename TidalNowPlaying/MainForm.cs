@@ -8,10 +8,18 @@ namespace TidalNowPlaying
         private System.Windows.Forms.Timer songTimer = new System.Windows.Forms.Timer();
         private bool isEnabled = false;
         private string _currentSongInfo = string.Empty;
+        private readonly string appDataFolder = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "TidalNowPlaying");
+        private readonly OutputSettings outputSettings;
 
         public MainForm()
         {
             InitializeComponent();
+            outputSettings = OutputSettings.Load(Path.Combine(appDataFolder, "settings.json"));
+            includePrefixCheckbox.Checked = outputSettings.IncludePrefix;
+            trailingSpacesInput.Value = outputSettings.TrailingSpaces;
+            includePrefixCheckbox.CheckedChanged += OutputSettings_Changed;
+            trailingSpacesInput.ValueChanged += OutputSettings_Changed;
 
             try
             {
@@ -117,10 +125,9 @@ namespace TidalNowPlaying
 
             if (!string.IsNullOrEmpty(songInfo))
             {
-                string formatted = $"Current Song: {songInfo}";
+                string formatted = outputSettings.Format(songInfo);
                 try
                 {
-                    string appDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "TidalNowPlaying");
                     Directory.CreateDirectory(appDataFolder);
                     string filePath = Path.Combine(appDataFolder, "CurrentSongDetails.txt");
                     File.WriteAllText(filePath, formatted);
@@ -130,6 +137,24 @@ namespace TidalNowPlaying
                     Console.WriteLine($"Error writing file: {ex.Message}");
                 }
             }
+        }
+
+        private void OutputSettings_Changed(object? sender, EventArgs e)
+        {
+            outputSettings.IncludePrefix = includePrefixCheckbox.Checked;
+            outputSettings.TrailingSpaces = (int)trailingSpacesInput.Value;
+            try
+            {
+                outputSettings.Save(Path.Combine(appDataFolder, "settings.json"));
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            {
+                MessageBox.Show(this, $"The output settings could not be saved: {ex.Message}",
+                    "Settings not saved", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+
+            if (isEnabled)
+                SongTimer_Tick(null, EventArgs.Empty);
         }
 
         private string GetTidalWindowTitle()
