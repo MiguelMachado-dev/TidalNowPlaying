@@ -60,8 +60,14 @@ jobs:
           GH_REPO: ${{ github.repository }}
           RELEASE_TAG: ${{ github.ref_name }}
         run: |
-          gh release create "$RELEASE_TAG" \
-            artifacts/TidalNowPlaying.exe \
-            artifacts/TidalNowPlaying.exe.sha256 \
-            --verify-tag --title "$RELEASE_TAG" --generate-notes \
-            --notes "Requires the .NET 8 Desktop Runtime for Windows x64. The SHA-256 checksum verifies file integrity; this release does not include a GPG signature."
+          if gh release view "$RELEASE_TAG" > /dev/null 2>&1; then
+            gh release upload "$RELEASE_TAG" \
+              artifacts/TidalNowPlaying.exe \
+              artifacts/TidalNowPlaying.exe.sha256 --clobber
+          else
+            gh release create "$RELEASE_TAG" \
+              artifacts/TidalNowPlaying.exe \
+              artifacts/TidalNowPlaying.exe.sha256 \
+              --verify-tag --title "$RELEASE_TAG" --generate-notes \
+              --notes "Requires the .NET 8 Desktop Runtime for Windows x64. The SHA-256 checksum verifies file integrity; this release does not include a GPG signature."
+          fi
