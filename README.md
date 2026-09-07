@@ -43,6 +43,13 @@ Um aplicativo simples para Windows que roda na bandeja do sistema (system tray),
     * Este arquivo pode ser usado como fonte de texto em softwares como OBS, Streamlabs, etc., para mostrar a música na sua live.
 6.  Clique em **"Disable"** para parar o monitoramento. Para fechar completamente o aplicativo, clique com o botão direito no ícone na bandeja e selecione **"Exit"**.
 
+#### Formato do arquivo de texto
+
+* Desmarque **"Include \"Current Song:\" prefix"** para salvar somente `Artista - Título`.
+* Ajuste **"Trailing spaces"** de 0 a 100 para adicionar espaços ao final do texto e separar as repetições em um overlay com rolagem.
+* O padrão mantém o prefixo `Current Song: ` e nenhum espaço extra. As opções afetam apenas o arquivo de texto, sem alterar o tooltip.
+* As alterações são salvas em `%AppData%\TidalNowPlaying\settings.json` e aplicadas imediatamente quando o monitoramento está habilitado e uma música é detectada.
+
 ### 🛠️ Compilando do Código Fonte (Opcional)
 
 Se preferir compilar o aplicativo você mesmo:
@@ -156,6 +163,13 @@ A simple Windows application that runs in the system tray, reads the currently p
     * This file can be used as a text source in software like OBS, Streamlabs, etc., to display the current song on your stream.
 6.  Click **"Disable"** to stop monitoring. To close the application completely, right-click the tray icon and select **"Exit"**.
 
+#### Text file format
+
+* Uncheck **"Include \"Current Song:\" prefix"** to save only `Artist - Title`.
+* Set **"Trailing spaces"** from 0 to 100 to append spaces after the text, leaving a gap between repetitions in a scrolling overlay.
+* The default keeps the `Current Song: ` prefix and adds no extra spaces. These options affect only the text file, leaving the tray tooltip unchanged.
+* Changes are saved to `%AppData%\TidalNowPlaying\settings.json` and apply immediately while monitoring is enabled and a song is detected.
+
 ### 🛠️ Building from Source (Optional)
 
 If you prefer to build the application yourself:
@@ -181,6 +195,12 @@ If you prefer to build the application yourself:
     dotnet publish -c Release -r win-x64 --self-contained false /p:PublishSingleFile=true /p:PublishReadyToRun=true
     ```
     The result will be in `bin/Release/net8.0-windows/win-x64/publish/`.
+
+Run the output formatting and settings checks from the repository root:
+
+```bash
+dotnet run --project tests/OutputSettings.Tests -c Release
+```
 
 ### 🔒 Integrity and Authenticity Verification
 
